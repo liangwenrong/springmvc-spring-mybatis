@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lwr.dao.UserDao">
+
+    <select id="getLoginUser" resultType="User">
+	    SELECT
+            *
+		FROM
+            user
+		WHERE
+            login_id = #{loginId}
+		AND
+            password = #{password}
+	</select>
+
+	<insert id="addUser" parameterType="User">
+		insert into user(id,name,login_id,password,tel,create_date)
+		VALUES(#{id},#{name},#{loginId},#{password},#{tel},#{createDate,jdbcType=TIMESTAMP})
+	</insert>
+
+	<select id="queryUserList" resultType="User">
+		SELECT
+            *
+		FROM
+            user
+		<where>
+			<if test="form.name != null and form.name != ''">
+                and name like "%"#{form.name,jdbcType=VARCHAR}"%"
+                <!-- name like concat('%',#{carDeptName,jdbcType=VARCHAR},'%') -->
+			</if>
+			<if test="form.start != null">
+                and create_date &gt;= #{form.start,jdbcType=TIMESTAMP}
+			</if>
+			<if test="form.end != null">
+                and create_date &lt;= #{form.end,jdbcType=TIMESTAMP}
+			</if>
+		</where>
+		LIMIT  ${form.pageSize*(form.pageIndex-1)}, #{form.pageSize}
+	</select>
+
+</mapper>
